@@ -2,6 +2,6 @@
 
 int main()
 {
-    CrearCerradura();
+    ValidarRegla_Sobre_Cerradura();
     return 0;
 }
