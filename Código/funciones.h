@@ -17,15 +17,15 @@ int ** Matriz_Estado_3(int **& MatrizRotada, int **&MatrizOriginal, int Dim);
 
 //CrearCerradurasDeTamañoVariable
 int ***CrearCerradura(int &Tamano_Cerradura, int *& Dim_Matrices);
-void Imprimir_Matrices_Cerradura(int ***& X, int &Tamano_Cerradura, int *& Dim_Matrices);
+void Imprimir_Matrices_Cerradura(int ***& X, int &Tamano_Cerradura, int *& Dim_Matrices, int *& Cerraduras_Rotadas);
 void Eliminar_Cerradura(int ***& X, int &Tamano_Cerradura, int *&Dim_Matrices);
 
 //Validar una regla sobre una Cerradura
 void ValidarRegla_Sobre_Cerradura();
 void Crear_Cerradura_Rotada(int ***& X, int & Tamano_Cerraduara, int *& Dim_Matrices, int *& Cerraduras_Rotadas, int *& Regla);
 int *Crear_Regla( int& Tamano_Cerradura, int*& Dim_Matrices);
-int ** Comparacion_Estructuras(int **&Estructura1, int **& Estructura2, int **&Matriz_Rotada, int Fila, int Col, int Condicion, int Dim2);
-void CopiarMatriz(int **& Matriz_Rotada, int **& Matriz_Original, int Dim);
+int ** Comparacion_Estructuras(int **&Estructura1, int **& Estructura2, int Fila, int Col, int Condicion, int Dim2, int *&Rotacion_Cerradura, int Pos);
+void CopiarMatriz(int **& Matriz_Rotada, int ** &Matriz_Original, int Dim);
 
 //Validaciones
 int ValidarDimensionImpar();

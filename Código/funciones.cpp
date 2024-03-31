@@ -109,7 +109,6 @@ int *** CrearCerradura(int &Tamano_Cerradura, int *& Dim_Matrices)
     for (int i = 0; i < Tamano_Cerradura; i++){
         X[i] = Crear_Matriz_Mecanicamente(Dim_Matrices, i);
     }
-    Imprimir_Matrices_Cerradura(X, Tamano_Cerradura, Dim_Matrices);
     return X;
 }
 
@@ -121,11 +120,12 @@ void Eliminar_Cerradura(int ***&X, int &Tamano_Cerradura, int*& Dim_Matrices)
     delete[] X;
 }
 
-void Imprimir_Matrices_Cerradura(int ***& X, int& Tamano_Cerradura, int*& Dim_Matrices)
+void Imprimir_Matrices_Cerradura(int ***& X, int& Tamano_Cerradura, int*& Dim_Matrices, int *& Estructuras_Rotadas)
 {
 
     for (int i = 0; i < Tamano_Cerradura; ++i) {
         Mostrar_Matriz(X[i], Dim_Matrices[i]);
+        cout << "Estado " << Estructuras_Rotadas[i] << endl;
     }
 }
 
@@ -135,20 +135,11 @@ void ValidarRegla_Sobre_Cerradura()
     int Tamano_Cerradura = 0, *Dim_Matrices, *Estructuras_Rotadas;
     int *** X = CrearCerradura(Tamano_Cerradura, Dim_Matrices);
     int * Regla = Crear_Regla(Tamano_Cerradura, Dim_Matrices);
+    Estructuras_Rotadas = new int[Tamano_Cerradura];
     Crear_Cerradura_Rotada(X, Tamano_Cerradura, Dim_Matrices, Estructuras_Rotadas, Regla);
-    /*
-    for (int i = 0; i < Tamano_Cerradura; i++){
-        cout << Dim_Matrices[i] << " ";
-    }
-
-    cout << endl << endl;
-    for (int i = 0; i < (Tamano_Cerradura+1); i++){
-        cout << Regla[i] << " ";
-    }
-    */
 
     Eliminar_Cerradura(X, Tamano_Cerradura, Dim_Matrices);
-    delete[] Dim_Matrices; delete[] Regla;
+    delete[] Dim_Matrices; delete[] Regla; delete[] Estructuras_Rotadas;
 }
 
 int *Crear_Regla(int& Tamano_Cerradura, int*& Dim_Matrices)
@@ -200,55 +191,71 @@ int Dimension_Menor(int *&Dim_Matrices, int Tamano_Cerradura)
 
 void Crear_Cerradura_Rotada(int ***&X, int &Tamano_Cerraduara, int *&Dim_Matrices, int *&Cerraduras_Rotadas, int *&Regla)
 {
-    int Fila =  ((Regla[0])-1), Columna = ((Regla[1])-1);
+    int Fila = Regla[0] - 1;
+    int Columna = (Regla[1]) - 1;
     for (int i = 0; i < (Tamano_Cerraduara-1); i++){
-        int ** Matriz_Rotada = new int*[ Dim_Matrices[i+1]];
-        X[i+1] = Comparacion_Estructuras(X[i], X[i+1], Matriz_Rotada, Fila, Columna, Regla[i+2], Dim_Matrices[i+1]);
-        Mostrar_Matriz(X[i+1], Dim_Matrices[i+1]);
-
-
-
-        Eliminar_Matriz_Bidimensional(Matriz_Rotada, Dim_Matrices[i+1]);
-        //Funcion Para Comprobar La Matriz y SuS Rotaciones
+        int ** matrizComparada = Comparacion_Estructuras(X[i], X[i+1], Fila, Columna, Regla[i+2], Dim_Matrices[i+1], Cerraduras_Rotadas, i);
+        if (matrizComparada == nullptr) {
+            cout << endl << endl<< "La llave no tiene una combinacion de apertura en la cerradura" << endl << endl;
+            break;
+        }
+        else CopiarMatriz(X[i+1], matrizComparada, Dim_Matrices[i+1]);
+        Eliminar_Matriz_Bidimensional(matrizComparada, Dim_Matrices[i+1]);
     }
+
+    Imprimir_Matrices_Cerradura(X, Tamano_Cerraduara, Dim_Matrices, Cerraduras_Rotadas);
+
 }
 
-int ** Comparacion_Estructuras(int **&Estructura1, int **&Estructura2, int**& Matriz_Rotada, int Fila, int Col, int Condicion, int Dim2)
+int ** Comparacion_Estructuras(int **&Estructura1, int **&Estructura2, int Fila, int Col, int Condicion, int Dim2, int *&Estructuras_Rotadas, int Pos)
 {
-    Crear_Elementos_Internos(Matriz_Rotada,Dim2);
+    int **Matriz_Rotada = new int*[Dim2];
+    Crear_Elementos_Internos(Matriz_Rotada, Dim2);
     CopiarMatriz(Matriz_Rotada, Estructura2, Dim2);
 
-    switch(Condicion){
-    case 1: {
-        for (int i = 0; i < 3; i++){
-            if (Estructura1[Fila][Col] > Matriz_Rotada[Fila][Col]) return Matriz_Rotada;
-            else if (i == 0) Matriz_Rotada = Matriz_Estado_1(Matriz_Rotada, Estructura2, Dim2);
-            else if (i == 1) Matriz_Rotada = Matriz_Estado_2(Matriz_Rotada, Estructura2, Dim2);
-            else if (i== 2) Matriz_Rotada =  Matriz_Estado_3(Matriz_Rotada, Estructura2, Dim2);
-        }
-    }
-    break;
-    case (-1): {
-        for (int i = 0; i < 3; i++){
-            Mostrar_Matriz(Matriz_Rotada, Dim2);
-            if (Estructura1[Fila][Col] < Matriz_Rotada[Fila][Col]) return Matriz_Rotada;
-            else if (i == 0) Matriz_Rotada = Matriz_Estado_1(Matriz_Rotada, Estructura2, Dim2);
-            else if (i == 1) Matriz_Rotada = Matriz_Estado_2(Matriz_Rotada, Estructura2, Dim2);
-            else if (i== 2) Matriz_Rotada =  Matriz_Estado_3(Matriz_Rotada, Estructura2, Dim2);
-        }
-    }
-    break;
-    case 0: {
-        for (int i = 0; i < 3; i++){
-            if (Estructura1[Fila][Col] == Matriz_Rotada[Fila][Col]) return Matriz_Rotada;
-            else if (i == 0) Matriz_Rotada = Matriz_Estado_1(Matriz_Rotada, Estructura2, Dim2);
-            else if (i == 1) Matriz_Rotada = Matriz_Estado_2(Matriz_Rotada, Estructura2, Dim2);
-            else if (i== 2) Matriz_Rotada =  Matriz_Estado_3(Matriz_Rotada, Estructura2, Dim2);
-        }
-    }
-    break;
-    }
 
-    return Matriz_Rotada;
+    switch (Condicion) {
+    case 1: {
+        for (int i = 0; i <= 3; i++) {
+            cout << "Original: " << Estructura1[Fila][Col] << endl;
+            cout << "Rotada: " << Matriz_Rotada[Fila][Col] << endl;
+            if (Estructura1[Fila][Col] > Matriz_Rotada[Fila][Col]){
+                Estructuras_Rotadas[Pos+1] = i;
+                return Matriz_Rotada;
+            }
+            if (i == 0) Matriz_Rotada = Matriz_Estado_1(Matriz_Rotada, Estructura2, Dim2);
+            if (i == 1) Matriz_Rotada = Matriz_Estado_2(Matriz_Rotada, Estructura2, Dim2);
+            if (i == 2) Matriz_Rotada = Matriz_Estado_3(Matriz_Rotada, Estructura2, Dim2);
+        }
+        break;
+    }
+    case (-1): {
+        for (int i = 0; i <= 3; i++) {
+            cout << "Original: " << Estructura1[Fila][Col] << endl;
+            cout << "Rotada: " << Matriz_Rotada[Fila][Col] << endl;
+            if (Estructura1[Fila][Col] < Matriz_Rotada[Fila][Col]){
+                Estructuras_Rotadas[Pos+1] = i;
+                return Matriz_Rotada;
+            }
+            if (i == 0) Matriz_Rotada = Matriz_Estado_1(Matriz_Rotada, Estructura2, Dim2);
+            if (i == 1) Matriz_Rotada = Matriz_Estado_2(Matriz_Rotada, Estructura2, Dim2);
+            if (i == 2) Matriz_Rotada = Matriz_Estado_3(Matriz_Rotada, Estructura2, Dim2);
+        }
+        break;
+    }
+    case 0: {
+        for (int i = 0; i <= 3; i++) {
+            if (Estructura1[Fila][Col] == Matriz_Rotada[Fila][Col]){
+                Estructuras_Rotadas[Pos+1] = i;
+                return Matriz_Rotada;
+            }
+            if (i == 0) Matriz_Rotada = Matriz_Estado_1(Matriz_Rotada, Estructura2, Dim2);
+            if (i == 1) Matriz_Rotada = Matriz_Estado_2(Matriz_Rotada, Estructura2, Dim2);
+            if (i == 2) Matriz_Rotada = Matriz_Estado_3(Matriz_Rotada, Estructura2, Dim2);
+        }
+        break;
+    }
+    }
+    return nullptr;
 }
 
