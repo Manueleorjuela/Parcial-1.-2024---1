@@ -212,49 +212,35 @@ int ** Comparacion_Estructuras(int **&Estructura1, int **&Estructura2, int Fila,
     int **Matriz_Rotada = new int*[Dim2];
     Crear_Elementos_Internos(Matriz_Rotada, Dim2);
     CopiarMatriz(Matriz_Rotada, Estructura2, Dim2);
+    Estructuras_Rotadas[0] = 0;
 
-
-    switch (Condicion) {
-    case 1: {
-        for (int i = 0; i <= 3; i++) {
-            cout << "Original: " << Estructura1[Fila][Col] << endl;
-            cout << "Rotada: " << Matriz_Rotada[Fila][Col] << endl;
+    for (int i = 0; i <= 3; i++){
+        switch (Condicion) {
+        case 1: {
             if (Estructura1[Fila][Col] > Matriz_Rotada[Fila][Col]){
                 Estructuras_Rotadas[Pos+1] = i;
                 return Matriz_Rotada;
             }
-            if (i == 0) Matriz_Rotada = Matriz_Estado_1(Matriz_Rotada, Estructura2, Dim2);
-            if (i == 1) Matriz_Rotada = Matriz_Estado_2(Matriz_Rotada, Estructura2, Dim2);
-            if (i == 2) Matriz_Rotada = Matriz_Estado_3(Matriz_Rotada, Estructura2, Dim2);
+            break;
         }
-        break;
-    }
-    case (-1): {
-        for (int i = 0; i <= 3; i++) {
-            cout << "Original: " << Estructura1[Fila][Col] << endl;
-            cout << "Rotada: " << Matriz_Rotada[Fila][Col] << endl;
+        case (-1): {
             if (Estructura1[Fila][Col] < Matriz_Rotada[Fila][Col]){
                 Estructuras_Rotadas[Pos+1] = i;
                 return Matriz_Rotada;
             }
-            if (i == 0) Matriz_Rotada = Matriz_Estado_1(Matriz_Rotada, Estructura2, Dim2);
-            if (i == 1) Matriz_Rotada = Matriz_Estado_2(Matriz_Rotada, Estructura2, Dim2);
-            if (i == 2) Matriz_Rotada = Matriz_Estado_3(Matriz_Rotada, Estructura2, Dim2);
+            break;
         }
-        break;
-    }
-    case 0: {
-        for (int i = 0; i <= 3; i++) {
+        case 0: {
             if (Estructura1[Fila][Col] == Matriz_Rotada[Fila][Col]){
                 Estructuras_Rotadas[Pos+1] = i;
                 return Matriz_Rotada;
             }
-            if (i == 0) Matriz_Rotada = Matriz_Estado_1(Matriz_Rotada, Estructura2, Dim2);
-            if (i == 1) Matriz_Rotada = Matriz_Estado_2(Matriz_Rotada, Estructura2, Dim2);
-            if (i == 2) Matriz_Rotada = Matriz_Estado_3(Matriz_Rotada, Estructura2, Dim2);
+            break;
         }
-        break;
-    }
+        }
+        if (i == 0) Matriz_Rotada = Matriz_Estado_1(Matriz_Rotada, Estructura2, Dim2);
+        if (i == 1) Matriz_Rotada = Matriz_Estado_2(Matriz_Rotada, Estructura2, Dim2);
+        if (i == 2) Matriz_Rotada = Matriz_Estado_3(Matriz_Rotada, Estructura2, Dim2);
     }
     return nullptr;
 }
