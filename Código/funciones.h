@@ -24,13 +24,15 @@ void Eliminar_Cerradura(int ***& X, int &Tamano_Cerradura, int *&Dim_Matrices);
 void ValidarRegla_Sobre_Cerradura();
 void Crear_Cerradura_Rotada(int ***& X, int & Tamano_Cerraduara, int *& Dim_Matrices, int *& Cerraduras_Rotadas, int *& Regla);
 int *Crear_Regla( int& Tamano_Cerradura, int*& Dim_Matrices);
-int ** Comparacion_Estructuras(int **&Estructura1, int **& Estructura2, int Fila, int Col, int Condicion, int Dim2, int *&Rotacion_Cerradura, int Pos);
+int **Comparacion_Estructuras(int **&Estructura1, int **& Estructura2, int Fila, int Col, int Condicion, int Dim2, int *&Rotacion_Cerradura, int Pos);
 void CopiarMatriz(int **& Matriz_Rotada, int ** &Matriz_Original, int Dim);
+void Comparacion_Estructuras_Iniciales(int **&Estructura1, int **& Estructura2, int Fila, int Col, int Condicion, int Dim1, int Dim2, int **&Matriz_Comparada);
 
 //Validaciones
 int ValidarDimensionImpar();
 int ValidarCondicionesRegla(int M1, int M2);
 int ValidarTamanoMatrices(int Dim_Mayor, int Pos);
 int Dimension_Menor(int *& Dim_Matrices, int Tamano_Cerradura);
+void Validar_Impresion(bool Bandera, int ***& X, int &Tamano_Cerradura, int *& Dim_Matrices, int *& Cerraduras_Rotadas);
 
 #endif // FUNCIONES_H

@@ -125,7 +125,8 @@ void Imprimir_Matrices_Cerradura(int ***& X, int& Tamano_Cerradura, int*& Dim_Ma
 
     for (int i = 0; i < Tamano_Cerradura; ++i) {
         Mostrar_Matriz(X[i], Dim_Matrices[i]);
-        cout << "Estado " << Estructuras_Rotadas[i] << endl;
+        if (Estructuras_Rotadas[i] == 0) cout << "Estado " << "Neutro " << endl;
+        else cout << "Estado " << Estructuras_Rotadas[i] << endl;
     }
 }
 
@@ -191,20 +192,20 @@ int Dimension_Menor(int *&Dim_Matrices, int Tamano_Cerradura)
 
 void Crear_Cerradura_Rotada(int ***&X, int &Tamano_Cerraduara, int *&Dim_Matrices, int *&Cerraduras_Rotadas, int *&Regla)
 {
-    int Fila = Regla[0] - 1;
-    int Columna = (Regla[1]) - 1;
-    for (int i = 0; i < (Tamano_Cerraduara-1); i++){
-        int ** matrizComparada = Comparacion_Estructuras(X[i], X[i+1], Fila, Columna, Regla[i+2], Dim_Matrices[i+1], Cerraduras_Rotadas, i);
+    int Fila = Regla[0] - 1; bool Bandera = false;
+    int Columna = (Regla[1]) - 1, ** matrizComparada;
+    Comparacion_Estructuras_Iniciales(X[0], X[1], Fila, Columna, Regla[2], Dim_Matrices[0], Dim_Matrices[1], matrizComparada);
+    for (int i = 1  ; i < (Tamano_Cerraduara - 1); i++) {
+        matrizComparada = Comparacion_Estructuras(X[i], X[i+1], Fila, Columna, Regla[i+2], Dim_Matrices[i+1], Cerraduras_Rotadas, i);
         if (matrizComparada == nullptr) {
-            cout << endl << endl<< "La llave no tiene una combinacion de apertura en la cerradura" << endl << endl;
+            Bandera  = true;
             break;
+        } else {
+            CopiarMatriz(X[i+1], matrizComparada, Dim_Matrices[i+1]);
+            Eliminar_Matriz_Bidimensional(matrizComparada, Dim_Matrices[i+1]);
         }
-        else CopiarMatriz(X[i+1], matrizComparada, Dim_Matrices[i+1]);
-        Eliminar_Matriz_Bidimensional(matrizComparada, Dim_Matrices[i+1]);
     }
-
-    Imprimir_Matrices_Cerradura(X, Tamano_Cerraduara, Dim_Matrices, Cerraduras_Rotadas);
-
+    Validar_Impresion(Bandera, X, Tamano_Cerraduara, Dim_Matrices, Cerraduras_Rotadas);
 }
 
 int ** Comparacion_Estructuras(int **&Estructura1, int **&Estructura2, int Fila, int Col, int Condicion, int Dim2, int *&Estructuras_Rotadas, int Pos)
@@ -212,7 +213,6 @@ int ** Comparacion_Estructuras(int **&Estructura1, int **&Estructura2, int Fila,
     int **Matriz_Rotada = new int*[Dim2];
     Crear_Elementos_Internos(Matriz_Rotada, Dim2);
     CopiarMatriz(Matriz_Rotada, Estructura2, Dim2);
-    Estructuras_Rotadas[0] = 0;
 
     for (int i = 0; i <= 3; i++){
         switch (Condicion) {
@@ -245,3 +245,64 @@ int ** Comparacion_Estructuras(int **&Estructura1, int **&Estructura2, int Fila,
     return nullptr;
 }
 
+void Validar_Impresion(bool Bandera, int ***& X, int &Tamano_Cerradura, int *& Dim_Matrices, int *& Cerraduras_Rotadas)
+{
+    if (Bandera == true) cout << endl << endl << "La llave no tiene una combinacion de apertura en la cerradura" << endl << endl;
+    else Imprimir_Matrices_Cerradura(X, Tamano_Cerradura, Dim_Matrices, Cerraduras_Rotadas);
+}
+
+void Comparacion_Estructuras_Iniciales(int **&Estructura1, int **&Estructura2, int Fila, int Col, int Condicion, int Dim1, int Dim2, int **& Matriz_Comparada)
+{
+    int **Matriz_Rotada1 = new int *[Dim1], **Matriz_Rotada2 = new int *[Dim2];
+    Crear_Elementos_Internos(Matriz_Rotada1, Dim1);
+    Crear_Elementos_Internos(Matriz_Rotada2, Dim2);
+    CopiarMatriz(Matriz_Rotada1, Estructura1, Dim1);
+    bool Estado = false;
+
+    for (int i = 0; i <= 3; i++) {
+        CopiarMatriz(Matriz_Rotada2, Estructura2, Dim2);
+        for (int k = 0; k <= 3; k++) {
+            switch (Condicion) {
+            case 1: {
+                if (Matriz_Rotada1[Fila][Col] > Matriz_Rotada2[Fila][Col]) {
+                    Estado = true;
+                    break;
+                }
+                break;
+            }
+            case -1: {
+                if (Matriz_Rotada1[Fila][Col] < Matriz_Rotada2[Fila][Col]) {
+                    Estado = true;
+                    break;
+                }
+                break;
+            }
+            case 0: {
+                if (Matriz_Rotada1[Fila][Col] == Matriz_Rotada2[Fila][Col]) {
+                    Estado = true;
+                    break;
+                }
+                break;
+            }
+            }
+            if (Estado) break;
+            if (k == 0) Matriz_Rotada2 = Matriz_Estado_1(Matriz_Rotada2, Estructura2, Dim2);
+            if (k == 1) Matriz_Rotada2 = Matriz_Estado_2(Matriz_Rotada2, Estructura2, Dim2);
+            if (k == 2) Matriz_Rotada2 = Matriz_Estado_3(Matriz_Rotada2, Estructura2, Dim2);
+        }
+        if (Estado) break;
+        if (i == 0) Matriz_Rotada1 = Matriz_Estado_1(Matriz_Rotada1, Estructura1, Dim1);
+        if (i == 1) Matriz_Rotada1 = Matriz_Estado_1(Matriz_Rotada1, Estructura1, Dim1);
+        if (i == 2) Matriz_Rotada1 = Matriz_Estado_1(Matriz_Rotada1, Estructura1, Dim1);
+    }
+
+    if (!Estado) {
+        Matriz_Comparada = nullptr;
+    } else {
+        CopiarMatriz(Estructura1, Matriz_Rotada1, Dim1);
+        CopiarMatriz(Estructura2, Matriz_Rotada2, Dim2);
+    }
+
+    Eliminar_Matriz_Bidimensional(Matriz_Rotada1, Dim1);
+    Eliminar_Matriz_Bidimensional(Matriz_Rotada2, Dim2);
+}
