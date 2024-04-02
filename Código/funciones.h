@@ -24,9 +24,17 @@ void Eliminar_Cerradura(int ***& X, int &Tamano_Cerradura, int *&Dim_Matrices);
 void ValidarRegla_Sobre_Cerradura();
 void Crear_Cerradura_Rotada(int ***& X, int & Tamano_Cerraduara, int *& Dim_Matrices, int *& Cerraduras_Rotadas, int *& Regla);
 int *Crear_Regla( int& Tamano_Cerradura, int*& Dim_Matrices);
-void Comparacion_Estructuras(int **&Estructura1, int **& Estructura2, int Fila, int Col, int Condicion, int Dim1, int Dim2, int *&Rotacion_Cerradura, int Pos, bool &Guardar);
+void Comparacion_Estructuras(int **&Estructura1, int **& Estructura2, int Fila, int Col, int Condicion, int Dim2, bool &Estado);
 void CopiarMatriz(int **& Matriz_Rotada, int ** &Matriz_Original, int Dim);
-void Comparacion_Estructuras_Iniciales(int **&Estructura1, int **& Estructura2, int Fila, int Col, int Condicion, int Dim1, int Dim2, int **&Matriz_Comparada);
+
+//Crear_Una_Cerradura_A_Partir_De_Una_Regla
+void Generar_Configuracion_Cerradura();
+void Crear_Regla_Para_Generar_Cerradura(int*& Regla, int& Tamano);
+void Crear_Dimensiones_Para_Generar_Cerradura(int*&Regla, int*& Dim_Matrices, int& Tamano);
+int ***Crear_Cerradura_Estandar_Para_Generar(int ***& X_Generada, int*& Dim_Matrices, int& Tamano);
+int **Crear_Matriz_Automaticamente(int Dim);
+int Dimension_Minima_Cerradura_Generada(int*& Regla);
+void Modificar_Dimension_Cerradura(int*& Dim_Matrices, int Pos, int Condicion);
 
 //Validaciones
 int ValidarDimensionImpar();
@@ -34,5 +42,15 @@ int ValidarCondicionesRegla(int M1, int M2);
 int ValidarTamanoMatrices(int Dim_Mayor, int Pos);
 int Dimension_Menor(int *& Dim_Matrices, int Tamano_Cerradura);
 void Validar_Impresion(bool Bandera, int ***& X, int &Tamano_Cerradura, int *& Dim_Matrices, int *& Cerraduras_Rotadas);
+bool Validacion_PosicionCentral(int** Estructura1, int **Estructura2, int Fila, int Col);
+int Validar_Posicion_Regla_Para_Generar_Cerradura(int Pos);
+
+//Almacenar TODAS las combinaciones posbiles donde se cumpla
+int ***Combinaciones_Estructuras_Iniciales(int**& Estructura1, int**& Estructura2, int Fila, int Col, int Condicion, int Dim1, int Dim2, int***& Casos, int*&Respectivas_Rotaciones, int*&Respectivas_Dimensiones);
+int ***Copiar_Datos_Casos_Posibles(int ***&Casos, int Dim1, int Dim2, int**& Estructura1, int**& Estructura2);
+int *Copiar_Rotaciones_Posibles(int ***& Casos, int *&Rotaciones, int Cond1, int Cond2);
+int *Copiar_Dimensiones_Posibles(int ***& Casos, int *&Dimensiones, int Dim1, int Dim2);
+int Dimension_Casos_Posibles(int ***&Casos);
+int ***Casos_Posibles_Matriz_Fija(int***& Casos_Posibles, int **&Estructura, int Dim);
 
 #endif // FUNCIONES_H
