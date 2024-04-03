@@ -198,31 +198,58 @@ void Crear_Cerradura_Rotada(int ***&X, int &Tamano_Cerradura, int *&Dim_Matrices
     Casos = Combinaciones_Estructuras_Iniciales(X[0], X[1], Fila, Columna , Regla[2], Dim_Matrices[0], Dim_Matrices[1], Casos, Respectivas_Rotaciones, Respectivas_Dimensiones);
     int Posibilidad = Dimension_Casos_Posibles(Casos);
     bool Bandera;
+    //Imprimir_Matrices_Cerradura(Casos, Posibilidad, Respectivas_Dimensiones, Respectivas_Rotaciones);
+    X[0] = Casos[6];
+    X[1] = Casos[7];
+    int* Dimensiones_Posibles  = nullptr;
+    int *** Posibilidades = nullptr;
+    Posibilidades = Casos_Probables(Posibilidades, X[1], X[2], Fila, Columna, Regla[3], 5, Dimensiones_Posibles);
+    int A =  Dimension_Casos_Posibles(Posibilidades);
+    int ** Guardar = Evaluar_Posibilidades(Posibilidades, A, 1, Dim_Matrices[1], Fila, Columna , Bandera);
+    if (Bandera){
+        X[2] = Guardar;
+    }
+    Imprimir_Matrices_Cerradura(X, Tamano_Cerradura, Dim_Matrices, Cerraduras_Rotadas);
 
-    for (int i = 0; i < Posibilidad; i+=2){
+    //Funciona el maldito
+
+
+
+    /*
+    cout << Dimensiones_Posibles[0] << endl;
+    cout << Dimensiones_Posibles[1] << endl;
+    */
+    //A =  Dimension_Casos_Posibles(Posibilidades);
+    //cout << A << endl;
+    //Imprimir_Matrices_Cerradura(Posibilidades, A, Dimensiones_Posibles, Cerraduras_Rotadas);
+    /*
+    for (int i = 0; i <= Posibilidad; i+=2){
         X[0] = Casos[i]; Cerraduras_Rotadas[0] = Respectivas_Rotaciones[i];
         X[1] = Casos[i+1]; Cerraduras_Rotadas[1] = Respectivas_Rotaciones[i+1];
 
-        for (int j = 0; j < Tamano_Cerradura-1; j++){
+        for (int j = 1; j < Tamano_Cerradura-1; j++){
             Comparacion_Estructuras(X[j], X[j+1], Fila, Columna, Regla[j+2], Dim_Matrices[j+1], Bandera);
+            if(!Bandera) break;
         }
         if (Bandera) break;
-    }
+    }*/
 
-    Validar_Impresion(Bandera, X, Tamano_Cerradura, Dim_Matrices, Cerraduras_Rotadas);
-    delete[] Respectivas_Rotaciones; delete[] Respectivas_Dimensiones; //delete[] Casos_Fijos;
+
+    //Validar_Impresion(Bandera, X, Tamano_Cerradura, Dim_Matrices, Cerraduras_Rotadas);
+    delete[] Respectivas_Rotaciones; delete[] Respectivas_Dimensiones; delete[] Dimensiones_Posibles;
+    //Eliminar_Cerradura(Casos, Posibilidad, Respectivas_Dimensiones);
+    //Eliminar_Cerradura(Posibilidades, A, Dimensiones_Posibles);
 
 }
 
-void Comparacion_Estructuras(int **&Estructura1, int **&Estructura2, int Fila, int Col, int Condicion, int Dim2, bool &Estado)
-{
+int ***Casos_Probables(int ***&Posibilidades, int**&Estructura1, int **&Estructura2, int Fila, int Col, int Condicion, int Dim2, int *&Dimensiones_Posibles){
     int **Matriz_Rotada = new int *[Dim2];
     Crear_Elementos_Internos(Matriz_Rotada, Dim2);
     CopiarMatriz(Matriz_Rotada, Estructura2, Dim2);
-    Estado = false;
+    bool Estado = false;
+
 
     for (int i = 0; i<= 3; i++){
-
         switch(Condicion){
         case 1:
             Estado = (Estructura1[Fila][Col] > Matriz_Rotada[Fila][Col]);
@@ -235,13 +262,14 @@ void Comparacion_Estructuras(int **&Estructura1, int **&Estructura2, int Fila, i
             break;
         }
         if (Estado){
-            CopiarMatriz(Estructura2, Matriz_Rotada, Dim2);
-            break;
+            Dimensiones_Posibles = Copiar_Dimensiones_Posibles_Fijas(Posibilidades, Dimensiones_Posibles, Dim2);
+            Posibilidades = Copiar_Datos_Casos_Posibles_Fijo(Posibilidades, Dimensiones_Posibles, Matriz_Rotada, Dim2);
         }
         if (i == 0) Matriz_Rotada = Matriz_Estado_1(Matriz_Rotada, Estructura2, Dim2);
         if (i == 1) Matriz_Rotada = Matriz_Estado_2(Matriz_Rotada, Estructura2, Dim2);
         if (i == 2) Matriz_Rotada = Matriz_Estado_3(Matriz_Rotada, Estructura2, Dim2);
     }
+    return Posibilidades;
 }
 
 void Validar_Impresion(bool Bandera, int ***& X, int &Tamano_Cerradura, int *& Dim_Matrices, int *& Cerraduras_Rotadas)
@@ -254,13 +282,6 @@ bool Validacion_PosicionCentral(int **Estructura1, int **Estructura2, int Fila, 
     if(Estructura1[Fila][Col] == 0 or Estructura2[Fila][Col] == 0) return 0;
     else return 1;
 }
-
-//Generar Cerradura de forma Aleatoria
-/*
-void Generar_Configuracion_Cerradura()
-{
-
-}*/
 
 void Crear_Regla_Para_Generar_Cerradura(int *&Regla, int &Tamano)
 {
@@ -386,6 +407,7 @@ int ***Copiar_Datos_Casos_Posibles(int ***&Casos, int Dim1, int Dim2, int **&Est
 {
 
     int Dim = Dimension_Casos_Posibles(Casos);
+
     int ***Añadir_Casos = new int **[Dim + 2];
 
         for (int i = 0; i < Dim; ++i) {
@@ -396,6 +418,7 @@ int ***Copiar_Datos_Casos_Posibles(int ***&Casos, int Dim1, int Dim2, int **&Est
         CopiarMatriz(Añadir_Casos[i], Casos[i], tamano_matriz);
     }
 
+
     Añadir_Casos[Dim] = new int *[Dim1];
     Crear_Elementos_Internos(Añadir_Casos[Dim], Dim1);
     CopiarMatriz(Añadir_Casos[Dim], Estructura1, Dim1);
@@ -403,6 +426,8 @@ int ***Copiar_Datos_Casos_Posibles(int ***&Casos, int Dim1, int Dim2, int **&Est
     Añadir_Casos[Dim + 1] = new int *[Dim2];
     Crear_Elementos_Internos(Añadir_Casos[Dim + 1], Dim2);
     CopiarMatriz(Añadir_Casos[Dim + 1], Estructura2, Dim2);
+
+    Añadir_Casos[Dim+2] = nullptr;
 
     return Añadir_Casos;
 }
@@ -446,22 +471,55 @@ int *Copiar_Dimensiones_Posibles(int ***&Casos, int *&Dimensiones, int Dim1, int
     return Añadir_Dimensiones;
 }
 
-/*int ***Casos_Posibles_Matriz_Fija(int ***&Casos_Posibles, int **&Estructura, int Dim)
+int ***Copiar_Datos_Casos_Posibles_Fijo(int ***&Posibilidades, int *Dimensiones, int **Estructura, int Dim_Añadir)
 {
-    Dim = Dimension_Casos_Posibles(Casos_Posibles);
-    int ***Añadir_Casos = new int **[Dim + 1];
+    int Nueva_Dim = Dimension_Casos_Posibles(Posibilidades);
 
-    for (int i = 0; i < Dim; ++i) {
-            int Dimension_Interna = Dimension_Casos_Posibles_Fijos(Casos_Posibles[i]);
-            Añadir_Casos[i] = new int*[Dimension_Interna];
-            Crear_Elementos_Internos(Añadir_Casos[i], Dimension_Interna);
-            CopiarMatriz(Añadir_Casos[i], Casos_Posibles[i], Dimension_Interna);
+    int *** Nuevas_Posibilidades = new int **[Nueva_Dim+1];
+
+
+    for (int i = 0; i < Nueva_Dim; ++i) {
+        int Dim_Matrices = Dimensiones[i];
+        Nuevas_Posibilidades[i] = new int *[Dim_Matrices];
+        Crear_Elementos_Internos(Nuevas_Posibilidades[i], Dim_Matrices);
+        CopiarMatriz(Nuevas_Posibilidades[i], Posibilidades[i], Dim_Matrices);
     }
 
-    Añadir_Casos[Dim] = new int *[Dim];
-    Crear_Elementos_Internos(Añadir_Casos[Dim], Dim);
-    CopiarMatriz(Añadir_Casos[Dim], Estructura, Dim);
 
-    return Añadir_Casos;
+    Nuevas_Posibilidades[Nueva_Dim] = new int *[Dim_Añadir];
+    Crear_Elementos_Internos(Nuevas_Posibilidades[Nueva_Dim], Dim_Añadir);
+    CopiarMatriz( Nuevas_Posibilidades[Nueva_Dim], Estructura, Dim_Añadir);
+
+        Nuevas_Posibilidades[Nueva_Dim+1] = nullptr;
+    return Nuevas_Posibilidades;
 }
-*/
+
+int *Copiar_Dimensiones_Posibles_Fijas(int*** & Posibilidades, int *&Dimensiones, int Dim)
+{
+    int Dim_Nueva = Dimension_Casos_Posibles(Posibilidades);
+    int *Añadir_Dimensiones = new int[Dim_Nueva + 1];
+    for (int i = 0; i < Dim_Nueva; i++) {
+            Añadir_Dimensiones[i] = Dimensiones[i];
+    }
+    Añadir_Dimensiones[Dim_Nueva]  = Dim;
+    return Añadir_Dimensiones;
+}
+
+
+int ** Evaluar_Posibilidades(int ***&Posibilidades, int Tamano, int Condicion_Siguiente, int Dim, int Fila, int Col, bool &Estado)
+{
+    int **Matriz_Guardar;
+    int Mayor = 0;
+
+
+    for (int k = 0; k < Tamano; k++){
+            if (Posibilidades[k][Fila][Col] > Mayor){
+            Mayor = Posibilidades[k][Fila][Col];
+            Matriz_Guardar = new int*[Dim];
+            Crear_Elementos_Internos(Matriz_Guardar, Dim);
+            CopiarMatriz(Matriz_Guardar, Posibilidades[k],Dim);
+            Estado = true;
+        }
+    }
+    return Matriz_Guardar;
+}
