@@ -1,6 +1,7 @@
 #ifndef FUNCIONES_H
 #define FUNCIONES_H
 #include <iostream>
+#include <limits>
 using namespace std;
 
 //Creacion de estructura de datos variable
