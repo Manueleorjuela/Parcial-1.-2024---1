@@ -30,8 +30,6 @@ void CopiarMatriz(int **& Matriz_Rotada, int ** &Matriz_Original, int Dim);
 //Crear_Una_Cerradura_A_Partir_De_Una_Regla
 void Generar_Configuracion_Cerradura();
 void Crear_Regla_Para_Generar_Cerradura(int*& Regla, int& Tamano);
-void Crear_Dimensiones_Para_Generar_Cerradura(int*&Regla, int*& Dim_Matrices, int& Tamano);
-int ***Crear_Cerradura_Estandar_Para_Generar(int ***& X_Generada, int*& Dim_Matrices, int& Tamano);
 int **Crear_Matriz_Automaticamente(int Dim);
 int Dimension_Minima_Cerradura_Generada(int*& Regla);
 void Modificar_Dimension_Cerradura(int*& Dim_Matrices, int Pos, int Condicion);
@@ -52,10 +50,10 @@ int *Copiar_Rotaciones_Posibles(int ***& Casos, int *&Rotaciones, int Cond1, int
 int *Copiar_Dimensiones_Posibles(int ***& Casos, int *&Dimensiones, int Dim1, int Dim2);
 int Dimension_Casos_Posibles(int ***&Casos);
 
-//Para las fijas
+//Almacenar CASOS que tiene una matriz fija sobre otra
 int ***Casos_Probables(int ***&Posibilidades, int**&Estructura1, int **&Estructura2, int Fila, int Col, int Condicion, int Dim2, int *& Dimensiones_Posibles);
 int ***Copiar_Datos_Casos_Posibles_Fijo(int***&Posibilidades, int *Dimensiones, int **Estructura, int Dim_Añadir);
 int *Copiar_Dimensiones_Posibles_Fijas(int ***& Posibilidades, int *&Dimensiones, int Dim);
+int** Evaluar_Posibilidades(int **& Matriz_Guardar, int***& Posibilidades, int Tamano, int Condicion_Siguiente, int Dimension, int Fila, int Col);
 
-int** Evaluar_Posibilidades(int***& Posibilidades, int Tamano, int Condicion_Siguiente, int Dimension, int Fila, int Col, bool & Estado);
 #endif // FUNCIONES_H
