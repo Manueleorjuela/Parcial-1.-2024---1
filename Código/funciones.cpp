@@ -197,6 +197,7 @@ void Crear_Cerradura_Rotada(int ***&X, int &Tamano_Cerradura, int *&Dim_Matrices
     int Columna = (Regla[1]) - 1;
     bool Bandera = false;
     Cerraduras_Rotadas[0] = 0;
+    int Dim_Minima = Dimension_Menor(Dim_Matrices, Tamano_Cerradura);
 
 
     //Algoritmo para encontrar soluciones posibles de acuerdo a las condiciones siguientes
@@ -215,11 +216,15 @@ void Crear_Cerradura_Rotada(int ***&X, int &Tamano_Cerradura, int *&Dim_Matrices
                 Condicion_Siguiente = Regla[y+2];
             }
 
-            Guardar = Evaluar_Posibilidades(Guardar, Posibilidades, A, Condicion_Siguiente, Dim_Matrices[y+1], Fila, Columna, Cerraduras_Rotadas, Rotaciones_Posibles, y+1);
+            Guardar = Evaluar_Posibilidades(Guardar, Posibilidades, A, Condicion_Siguiente, Dim_Matrices[y+1], Dim_Minima, Fila, Columna, Cerraduras_Rotadas, Rotaciones_Posibles, y+1);
             CopiarMatriz(X[y+1], Guardar, Dim_Matrices[y+1]);
-            if (y == Tamano_Cerradura-2 and Posibilidades){
-                Eliminar_Matriz_Bidimensional(Guardar, Dim_Matrices[y+1]);
-                delete[] Dimensiones_Posibles; delete[] Rotaciones_Posibles; delete [] Posibilidades;
+
+            Eliminar_Matriz_Bidimensional(Guardar, Dim_Matrices[y+1]);
+            Eliminar_Cerradura(Posibilidades, A, Dimensiones_Posibles);
+
+            delete[] Dimensiones_Posibles; delete[] Rotaciones_Posibles;
+
+            if (y == Tamano_Cerradura-2 and Posibilidades){;
                 Bandera = true;
                 break;
             }
@@ -310,8 +315,7 @@ int ***Copiar_Datos_Casos_Posibles_Fijo(int ***&Posibilidades, int *Dimensiones,
 {
     int Nueva_Dim = Dimension_Casos_Posibles(Posibilidades);
 
-
-    int *** Nuevas_Posibilidades = new int **[Nueva_Dim+1];
+    int *** Nuevas_Posibilidades = new int **[Nueva_Dim+2];
 
     if(Posibilidades == nullptr){
         Nuevas_Posibilidades[Nueva_Dim] = new int *[Dim_Añadir];
@@ -350,25 +354,28 @@ int *Copiar_Dimensiones_Posibles_Fijas(int*** & Posibilidades, int *&Dimensiones
 }
 
 
-int ** Evaluar_Posibilidades(int **& Matriz_Guardar, int ***&Posibilidades, int Tamano, int Condicion_Siguiente, int Dim, int Fila, int Col, int*& R, int*& P, int Pos)
+int ** Evaluar_Posibilidades(int **& Matriz_Guardar, int ***&Posibilidades, int Tamano, int Condicion_Siguiente, int Dim, int Dim_Minima, int Fila, int Col, int*& R, int*& P, int Pos)
 {
     int Mayor = std::numeric_limits<int>::min();
     int Menor = std::numeric_limits<int>::max();
     bool Copiar = false;
+    int Desfase = Alineacion_Casos_Posibles(Dim, Dim_Minima);
+
+    if(Desfase == 0) Desfase =0;
 
     for (int i = 0; i < Tamano; i++){
             switch(Condicion_Siguiente){
                 case 1:
-                if (Posibilidades[i][Fila][Col] > Mayor){
+                if (Posibilidades[i][Fila+Desfase][Col+Desfase] > Mayor){
                     Copiar = true;
-                    Mayor = Posibilidades[i][Fila][Col];
+                    Mayor = Posibilidades[i][Fila+Desfase][Col+Desfase];
                 }
                 break;
                 case -1:
 
-                if (Posibilidades[i][Fila][Col] < Menor){
+                if (Posibilidades[i][Fila+Desfase][Col+Desfase] < Menor){
                     Copiar = true;
-                    Menor = Posibilidades[i][Fila][Col];
+                    Menor = Posibilidades[i][Fila+Desfase][Col+Desfase];
                 }
                 break;
                 case 0:
@@ -409,6 +416,7 @@ int Alineacion_Casos_Posibles(int Dim1, int Dim2){
 void Ubicacion_Celda(int Dim1, int Dim2, int Fila, int Col, int& filaEstructura, int& colEstructura, int& filaRotada, int& colRotada){
     int Alineacion = abs(Dim1-Dim2)/2;
 
+
     if (Dim1 > Dim2) {
         filaEstructura = Fila + Alineacion;
         colEstructura = Col + Alineacion;
@@ -421,3 +429,10 @@ void Ubicacion_Celda(int Dim1, int Dim2, int Fila, int Col, int& filaEstructura,
         colRotada = Col + Alineacion;
     }
 }
+
+
+
+
+
+
+

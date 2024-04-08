@@ -28,6 +28,7 @@ void Crear_Cerradura_Rotada(int ***& X, int & Tamano_Cerraduara, int *& Dim_Matr
 int *Crear_Regla( int& Tamano_Cerradura, int*& Dim_Matrices);
 void CopiarMatriz(int **&Matriz_Rotada, int ** Matriz_Original, int Dim);
 void Ubicacion_Celda(int Dim1, int Dim2, int Fila, int Col, int& filaEstructura, int& colEstructura, int& filaRotada, int& colRotada);
+int Alineacion_Casos_Posibles(int Dim1, int Dim2);
 
 //Validaciones
 int ValidarDimensionImpar();
@@ -42,7 +43,14 @@ int Validar_Posicion_Regla_Para_Generar_Cerradura(int Pos);
 int ***Casos_Probables(int ***&Posibilidades, int**&Estructura1, int **&Estructura2, int Fila, int Col, int Condicion, int Dim1, int Dim2, int *& Dimensiones_Posibles, int*& Rotaciones_Posibles);
 int ***Copiar_Datos_Casos_Posibles_Fijo(int***&Posibilidades, int *Dimensiones, int **Estructura, int Dim_Añadir);
 int *Copiar_Dimensiones_Posibles_Fijas(int ***& Posibilidades, int *&Dimensiones, int Dim);
-int** Evaluar_Posibilidades(int **& Matriz_Guardar, int***& Posibilidades, int Tamano, int Condicion_Siguiente, int Dimension, int Fila, int Col, int*& R, int*& P, int Pos);
+int** Evaluar_Posibilidades(int **& Matriz_Guardar, int***& Posibilidades, int Tamano, int Condicion_Siguiente, int Dimension, int Dim_Minima, int Fila, int Col, int*& R, int*& P, int Pos);
 int * Copiar_Rotaciones_Posibles_Fijas(int***& Posibilidades, int*& Rotaciones_Posibles, int Rotacion);
 int Dimension_Casos_Posibles(int ***&Casos);
+
+//Creacion de cerraduras a partir de una regla
+
+
+
 #endif // FUNCIONES_H
+
+
