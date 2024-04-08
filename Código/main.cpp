@@ -2,7 +2,8 @@
 
 int main()
 {
-    ValidarRegla_Sobre_Cerradura();
+    Generar_Cerradura_A_Partir_De_Una_Regla();
+    //ValidarRegla_Sobre_Cerradura();
 
     return 0;
 }

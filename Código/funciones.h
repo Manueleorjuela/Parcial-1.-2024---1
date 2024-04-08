@@ -3,6 +3,8 @@
 #include <iostream>
 #include <limits>
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 //Creacion de estructura de datos variable
@@ -24,7 +26,7 @@ void Eliminar_Cerradura(int ***&X, int Tamano_Cerradura, int *&Dim_Matrices);
 
 //Validar una regla sobre una Cerradura
 void ValidarRegla_Sobre_Cerradura();
-void Crear_Cerradura_Rotada(int ***& X, int & Tamano_Cerraduara, int *& Dim_Matrices, int *& Cerraduras_Rotadas, int *& Regla);
+void Crear_Cerradura_Rotada(int ***& X, int & Tamano_Cerraduara, int *& Dim_Matrices, int *& Cerraduras_Rotadas, int *& Regla, bool& Bandera);
 int *Crear_Regla( int& Tamano_Cerradura, int*& Dim_Matrices);
 void CopiarMatriz(int **&Matriz_Rotada, int ** Matriz_Original, int Dim);
 void Ubicacion_Celda(int Dim1, int Dim2, int Fila, int Col, int& filaEstructura, int& colEstructura, int& filaRotada, int& colRotada);
@@ -49,8 +51,23 @@ int Dimension_Casos_Posibles(int ***&Casos);
 
 //Creacion de cerraduras a partir de una regla
 
+//Regla
+int *Crear_Regla_Para_Generar(int &Tamano_Cerradura);
+void Generar_Cerradura_A_Partir_De_Una_Regla();
+int Posiciones_Regla_Generada(int Pos);
+int Condiciones_Regla_Generada(int M);
 
+//Creacion Dimension De Matrices para una relga
+int *Crear_Dimensiones_Regla(int Dimension_Mayor, int Tamano_Cerradura);
+int Dimension_Dim_Matrices(int *&Regla);
+void Buscar_Combinaciones(int *&Regla, int Tamano_Cerradura, int *&Dim_Matrices, int Dim_Mayor);
+
+//Creacion_Cerradura
+int *** Cerradura_Regla(int Tamano_Cerradura, int *Dimensiones);
+void Generar_Caso_Con_Numeros_Aleatorios(int *&Dimensiones, int Dim_Mayor, int Tamano);
 
 #endif // FUNCIONES_H
+
+
 
 

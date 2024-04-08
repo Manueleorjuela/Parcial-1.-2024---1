@@ -95,9 +95,7 @@ void CopiarMatriz(int **&Matriz_Rotada, int **Matriz_Original, int Dim)
 
 int *** CrearCerradura(int &Tamano_Cerradura, int *& Dim_Matrices)
 {
-    cout << "Ingrese la cantidad de estructuras presentes en la cerradura: ";  cin >> Tamano_Cerradura;
     int *** X = new int**[Tamano_Cerradura];
-    Dim_Matrices = new int [Tamano_Cerradura];
     for (int i = 0; i < Tamano_Cerradura; i++){
         X[i] = Crear_Matriz_Mecanicamente(Dim_Matrices, i);
     }
@@ -135,11 +133,13 @@ void Imprimir_Matrices_Cerradura(int ***& X, int& Tamano_Cerradura, int*& Dim_Ma
 void ValidarRegla_Sobre_Cerradura()
 {
 
-    int Tamano_Cerradura = 0, *Dim_Matrices, *Estructuras_Rotadas;
+    int Tamano_Cerradura = 0;
+    cout << "Ingrese la cantidad de estructuras presentes en la cerradura: ";  cin >> Tamano_Cerradura;
+    int *Dim_Matrices = new int[Tamano_Cerradura], *Estructuras_Rotadas = new int[Tamano_Cerradura];
+    bool Bandera = false;
     int *** X = CrearCerradura(Tamano_Cerradura, Dim_Matrices);
     int * Regla = Crear_Regla(Tamano_Cerradura, Dim_Matrices);
-    Estructuras_Rotadas = new int[Tamano_Cerradura];
-    Crear_Cerradura_Rotada(X, Tamano_Cerradura, Dim_Matrices, Estructuras_Rotadas, Regla);
+    Crear_Cerradura_Rotada(X, Tamano_Cerradura, Dim_Matrices, Estructuras_Rotadas, Regla, Bandera);
     Eliminar_Cerradura(X, Tamano_Cerradura, Dim_Matrices);
     delete[] Dim_Matrices; delete[] Regla; delete[] Estructuras_Rotadas;
 }
@@ -184,18 +184,19 @@ int ValidarTamanoMatrices(int Dim_Menor, int Pos)
 
 int Dimension_Menor(int *&Dim_Matrices, int Tamano_Cerradura)
 {
-    int Dim = Dim_Matrices[0];
+
+    int Dim = std::numeric_limits<int>::max();
     for (int i = 0; i < Tamano_Cerradura; i++){
         if (Dim_Matrices[i] < Dim) Dim = Dim_Matrices[i];
     }
     return Dim;
 }
 
-void Crear_Cerradura_Rotada(int ***&X, int &Tamano_Cerradura, int *&Dim_Matrices, int *&Cerraduras_Rotadas, int *&Regla)
+void Crear_Cerradura_Rotada(int ***&X, int &Tamano_Cerradura, int *&Dim_Matrices, int *&Cerraduras_Rotadas, int *&Regla, bool &Bandera)
 {
     int Fila = (Regla[0]) - 1;
     int Columna = (Regla[1]) - 1;
-    bool Bandera = false;
+    Bandera = false;
     Cerraduras_Rotadas[0] = 0;
     int Dim_Minima = Dimension_Menor(Dim_Matrices, Tamano_Cerradura);
 
@@ -219,12 +220,12 @@ void Crear_Cerradura_Rotada(int ***&X, int &Tamano_Cerradura, int *&Dim_Matrices
             Guardar = Evaluar_Posibilidades(Guardar, Posibilidades, A, Condicion_Siguiente, Dim_Matrices[y+1], Dim_Minima, Fila, Columna, Cerraduras_Rotadas, Rotaciones_Posibles, y+1);
             CopiarMatriz(X[y+1], Guardar, Dim_Matrices[y+1]);
 
+            //Liberacion
             Eliminar_Matriz_Bidimensional(Guardar, Dim_Matrices[y+1]);
             Eliminar_Cerradura(Posibilidades, A, Dimensiones_Posibles);
-
             delete[] Dimensiones_Posibles; delete[] Rotaciones_Posibles;
 
-            if (y == Tamano_Cerradura-2 and Posibilidades){;
+            if (y == Tamano_Cerradura-2){;
                 Bandera = true;
                 break;
             }
@@ -273,7 +274,7 @@ int ***Casos_Probables(int ***&Posibilidades, int**&Estructura1, int **&Estructu
 void Validar_Impresion(bool Bandera, int ***& X, int &Tamano_Cerradura, int *& Dim_Matrices, int *& Cerraduras_Rotadas)
 {
     if(Bandera) Imprimir_Matrices_Cerradura(X, Tamano_Cerradura, Dim_Matrices, Cerraduras_Rotadas);
-    else cout << "No existe una cerradura que satisfaga la regla" << endl;
+    //else cout << "No hay combinacion posible" << endl;
 }
 
 bool Validacion_PosicionCentral(int **Estructura1, int **Estructura2, int Fila, int Col)
@@ -430,9 +431,127 @@ void Ubicacion_Celda(int Dim1, int Dim2, int Fila, int Col, int& filaEstructura,
     }
 }
 
+void Generar_Cerradura_A_Partir_De_Una_Regla() {
+    int Tamano_Cerradura = 0;
+    int *Regla = Crear_Regla_Para_Generar(Tamano_Cerradura);
+    bool Bandera = false;
+    int Dim_Mayor = Dimension_Dim_Matrices(Regla);
+
+    int *Dim_Matrices = new int[Tamano_Cerradura];
+
+    while(true) {
+        int *Estructuras_Rotadas = new int[Tamano_Cerradura], *** X;
+        //Buscar combinaciones con numeros aleatorios
+        Generar_Caso_Con_Numeros_Aleatorios(Dim_Matrices, Dim_Mayor, Tamano_Cerradura);
+        //Crear cerradura a partir de las dimensiones
+        X = Cerradura_Regla(Tamano_Cerradura, Dim_Matrices);
+        // Evaluamos
+        Crear_Cerradura_Rotada(X, Tamano_Cerradura, Dim_Matrices, Estructuras_Rotadas, Regla, Bandera);
+        // Liberación de memoria
+        Eliminar_Cerradura(X, Tamano_Cerradura, Dim_Matrices);
+        delete[] Estructuras_Rotadas;
+        if (Bandera) {
+            break;
+        }
+    }
+
+    delete[] Dim_Matrices;
+    delete[] Regla;
+}
+
+int *Crear_Regla_Para_Generar(int &Tamano_Cerradura)
+{
+    cout << "Dimension de la cerradura" << endl;
+    while(true){
+        cout << "Ingrese la cantidad de estructuras en la cerradura, recuerde que la compania maneja maximo 5 de ellas: ";
+        cin >> Tamano_Cerradura;
+        if (Tamano_Cerradura > 5 or Tamano_Cerradura <=0) cout << "Tamano invalido" << endl;
+        else break;
+    }
+
+    int *Regla = new int[Tamano_Cerradura + 1];
+    cout << endl << "Recuerde que manejamos hasta maximo 11 dimensiones en cada estructura de la cerradura " << endl;
+    for (int i = 0; i < Tamano_Cerradura+1; i++){
+        if (i < 2) Regla[i] = Posiciones_Regla_Generada(i);
+        else Regla[i] = Condiciones_Regla_Generada(i);
+    }
+
+    return Regla;
+}
+
+int Posiciones_Regla_Generada(int Pos)
+{
+
+    if (Pos == 0) cout << endl << "Valor para la fila " << endl;
+    if (Pos == 1) cout << endl <<"Valor para la columna " << endl;
+    int Condicion;
+    while (true){
+        cout << "Ingrese un valor para la celda a evaluar: " ;
+        cin >> Condicion;
+        if (Condicion > 0 && Condicion <= 11) break;
+        else cout << "Posicion invalida" << endl << endl;
+    }
+    return Condicion;
+}
+
+int Condiciones_Regla_Generada(int M)
+{
+    int Condicion;
+    cout << "\n1. Que sea mayor" << "\n-1. Que sea menor" << "\n0. Que sean iguales" << endl;
+    while (true){
+        cout << endl << "Ingrese la condicion entre las estructuras " << M - 1  <<" y " << M <<": "; cin >> Condicion;
+            if (Condicion >= -1 && Condicion <= 1)break;
+            else cout << "La condicion NO es valida" << endl << endl;
+        }
+        return Condicion;
+}
 
 
+int *Crear_Dimensiones_Regla(int Dimension_Mayor, int Tamano_Cerradura)
+{
+    int *Dimensiones = new int[Tamano_Cerradura];
+    for (int i = 0; i < Tamano_Cerradura; i ++){
+            Dimensiones[i]  = Dimension_Mayor;
+    }
+    return Dimensiones;
+}
 
+int Dimension_Dim_Matrices(int *&Regla){
 
+    int Dim;
+    if (Regla[0] > Regla[1]) Dim = Regla[0];
+    else Dim = Regla[1];
 
+    if (Dim == 1) Dim+=2;
+    if (Dim%2 == 0) Dim +=1;
+    return Dim;
+}
 
+int ***Cerradura_Regla(int Tamano_Cerradura, int *Dimensiones)
+{
+    int ***X = new int **[Tamano_Cerradura];
+    for (int i = 0; i < Tamano_Cerradura;i++){
+        X[i] =  new int*[Dimensiones[i]];
+        Crear_Elementos_Internos(X[i], Dimensiones[i]);
+        Matriz_Estado_Neutro(X[i], Dimensiones[i]);
+    }
+    return X;
+}
+
+void Generar_Caso_Con_Numeros_Aleatorios(int *&Dimensiones, int Dim_Mayor, int Tamano)
+{
+    srand(time(0));
+
+    int opciones[] = {3, 5, 7, 9, 11};
+    int IndiceMin;
+    int IndiceMax = 4;
+
+    for (int i = 0; i < 5; i++){
+        if(opciones[i] == Dim_Mayor) IndiceMin = i;
+    }
+    int size = IndiceMax - IndiceMin;
+    for (int i = 0; i < Tamano; i++) {
+        int indice_aleatorio = IndiceMin + rand() % size;
+        Dimensiones[i] = opciones[indice_aleatorio];
+    }
+}
